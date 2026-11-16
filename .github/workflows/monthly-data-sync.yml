@@ -1,0 +1,59 @@
+name: Autonomous Monthly University & Exam Data Sync
+
+on:
+  schedule:
+    # Runs at 00:00 UTC on the 1st day of every month
+    - cron: '0 0 1 * *'
+  # Enables manual trigger from GitHub Actions dashboard for testing
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: monthly-data-sync
+  cancel-in-progress: false
+
+jobs:
+  sync-and-verify:
+    name: Monthly University & Exam Verification Pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Execute autonomous university & exam data verification
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: gemini-2.5-flash
+        run: npx tsx scripts/syncUniversityData.ts
+
+      - name: Verify TypeScript compilation
+        run: npx tsc --noEmit
+
+      - name: Verify Next.js production build
+        run: npm run build
+
+      - name: Commit and push refreshed dataset
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add lib/data/
+          if git diff --staged --quiet; then
+            echo "No data updates needed this month."
+          else
+            git commit -m "chore(data): autonomous monthly university & exam cutoff sync [skip ci]"
+            git push
+          fi

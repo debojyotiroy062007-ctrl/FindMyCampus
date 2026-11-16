@@ -1,26 +1,39 @@
 {
-  "name": "scholargrid",
+  "name": "findmycampus",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sync:data": "tsx scripts/syncUniversityData.ts",
+    "sync:data:dry": "tsx scripts/syncUniversityData.ts --dry-run"
   },
   "dependencies": {
+    "clsx": "^2.1.1",
+    "framer-motion": "^14.9.1",
+    "jszip": "^3.10.2",
+    "lucide-react": "^1.69.0",
+    "magic-string": "0.30.17",
     "next": "16.4.5",
+    "pdf-lib": "^1.17.1",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
+    "@google/genai": "^3.3.0",
     "@tailwindcss/turbopack": "^4",
+    "@types/jszip": "^3.4.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }
